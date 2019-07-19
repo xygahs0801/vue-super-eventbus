@@ -29,18 +29,21 @@ Vue.prototype.$bus = new EventBus();
 ### In Vue component
 ``` javascript
 created() {
-  this.$bus.share("login", { ok: true });
+  this.$bus
+    .emit("event1", { ok: true })
+    .share("event2", { ok: true });
 }
 ```
 ### In other Vue component
 ``` javascript
 created() {
-  this.$bus.on(this, "login", data => {
-    console.log(data);
-  });
-  this.$bus.on(this, "login", data => {
-    console.log(data);
-  });
+  this.$bus
+    .on(this, "event1", data => {
+      console.log(data);
+    })
+    .on(this, "event2", data => {
+      console.log(data);
+    });
 }
 ```
 ## API
