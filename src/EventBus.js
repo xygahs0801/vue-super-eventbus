@@ -10,6 +10,12 @@ export const EventBus = (() => {
   const _events = {};
   const _subs = {};
   return class EventBus {
+    /**
+     * Emit event
+     * @param {string|symbol} event Event name or symbol
+     * @param {*} args Event passed data
+     * @returns {EventBus} this
+     */
     emit(event, args) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -17,6 +23,13 @@ export const EventBus = (() => {
       _emmiter.emit(event, args);
       return this;
     }
+    /**
+     * Subscribers who subscribe after the event is published can also receive the event.
+     * It's like a global variable, but when that variable changes, all subscribers can receive a change event.
+     * @param {string|symbol} event Event name or symbol
+     * @param {*} args Event passed data
+     * @returns {EventBus} this
+     */
     share(event, args) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -25,6 +38,13 @@ export const EventBus = (() => {
       _emmiter.emit(event, args);
       return this;
     }
+    /**
+     * Subscribe events
+     * @param {Vue} vm Vue instance
+     * @param {string|symbol} event Event name or symbol
+     * @param {Function} listener
+     * @returns {EventBus} this
+     */
     on(vm, event, listener) {
       if (!vm) {
         throw new Error("第1个参数为vue的实例，不能为空");
@@ -74,6 +94,12 @@ export const EventBus = (() => {
         delete _subs[vm._uid];
       }
     }
+    /**
+     * Subscribe events once
+     * @param {string|symbol} event Event name or symbol
+     * @param {Function} listener
+     * @returns {EventBus} this
+     */
     once(event, listener) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -87,6 +113,12 @@ export const EventBus = (() => {
       });
       return this;
     }
+    /**
+     * Unsubscribe events
+     * @param {string|symbol} event Event name or symbol
+     * @param {Function} listener
+     * @returns {EventBus} this
+     */
     off(event, listener) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
