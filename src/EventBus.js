@@ -77,7 +77,7 @@ export const EventBus = (() => {
         beforeDestroy.push(beforeDestroyHandle);
       }
       const data = _events[event];
-      if (data) {
+      if (event in _events) {
         listener(deepClone(data));
       }
       _emmiter.on(event, data => {
@@ -105,7 +105,7 @@ export const EventBus = (() => {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
       }
       const data = _events[event];
-      if (data) {
+      if (event in _events) {
         listener(deepClone(data));
       }
       _emmiter.once(event, data => {
