@@ -45,6 +45,9 @@ created() {
       console.log(data);
     });
 }
+beforeDestroy() {
+  // No need this.$bus.off("xxxxx") !!!!
+}
 ```
 ## API
 ## Functions
