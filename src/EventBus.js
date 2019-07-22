@@ -16,11 +16,11 @@ export const EventBus = (() => {
      * @param {*} args Event passed data
      * @returns {EventBus} this
      */
-    emit(event, args) {
+    emit(event, ...args) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
       }
-      _emmiter.emit(event, args);
+      _emmiter.emit(event, ...args);
       return this;
     }
     /**
@@ -30,12 +30,12 @@ export const EventBus = (() => {
      * @param {*} args Event passed data
      * @returns {EventBus} this
      */
-    share(event, args) {
+    share(event, ...args) {
       if (!event) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
       }
       _events[event] = args;
-      _emmiter.emit(event, args);
+      _emmiter.emit(event, ...args);
       return this;
     }
     /**
@@ -78,10 +78,10 @@ export const EventBus = (() => {
       }
       const data = _events[event];
       if (event in _events) {
-        listener(deepClone(data));
+        listener(...deepClone(data));
       }
       _emmiter.on(event, data => {
-        listener(deepClone(data));
+        listener(...deepClone(data));
       });
       return this;
       function beforeDestroyHandle() {
@@ -106,10 +106,10 @@ export const EventBus = (() => {
       }
       const data = _events[event];
       if (event in _events) {
-        listener(deepClone(data));
+        listener(...deepClone(data));
       }
       _emmiter.once(event, data => {
-        listener(deepClone(data));
+        listener(...deepClone(data));
       });
       return this;
     }
