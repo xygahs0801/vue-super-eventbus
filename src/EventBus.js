@@ -1,8 +1,21 @@
 const Emmiter = require("events");
 function deepClone(obj) {
-  var _tmp, result;
-  _tmp = JSON.stringify(obj);
-  result = JSON.parse(_tmp);
+  if (!obj || true == obj)
+    //this also handles boolean as true and false
+    return obj;
+  var objType = typeof obj;
+  if ("number" == objType || "string" == objType)
+    // add your immutables here
+    return obj;
+  var result = Array.isArray(obj)
+    ? []
+    : !obj.constructor
+    ? {}
+    : new obj.constructor();
+  if (obj instanceof Map)
+    for (var key of obj.keys()) result.set(key, deepClone(obj.get(key)));
+  for (var key in obj)
+    if (obj.hasOwnProperty(key)) result[key] = deepClone(obj[key]);
   return result;
 }
 export const EventBus = (() => {
@@ -63,7 +76,17 @@ export const EventBus = (() => {
       if (!_subs[vm._uid][event]) {
         _subs[vm._uid][event] = [];
       }
-      _subs[vm._uid][event].push(listener);
+      const data = _events[event];
+      let listenerHandle = () => {
+        if (event in _events) {
+          if (data == null) {
+            listener(data);
+          } else {
+            listener(...deepClone(data));
+          }
+        }
+      };
+      _subs[vm._uid][event].push(listenerHandle);
       const beforeDestroy = vm.$options.beforeDestroy;
       let isReplced = false;
       for (let i = 0; i < beforeDestroy.length; i++) {
@@ -76,13 +99,10 @@ export const EventBus = (() => {
       if (!isReplced) {
         beforeDestroy.push(beforeDestroyHandle);
       }
-      const data = _events[event];
       if (event in _events) {
-        listener(...deepClone(data));
+        listenerHandle();
       }
-      _emmiter.on(event, data => {
-        listener(...deepClone(data));
-      });
+      _emmiter.on(event, listenerHandle);
       return this;
       function beforeDestroyHandle() {
         for (const event in _subs[vm._uid]) {
@@ -101,16 +121,20 @@ export const EventBus = (() => {
      * @returns {EventBus} this
      */
     once(event, listener) {
-      if (!event) {
+      if (!event || (typeof event !== "string" && typeof event !== "symbol")) {
         throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
       }
       const data = _events[event];
+      let listenerHandle = () => {
+        listener(...deepClone(data));
+      };
       if (event in _events) {
-        listener(...deepClone(data));
+        listenerHandle();
       }
-      _emmiter.once(event, data => {
-        listener(...deepClone(data));
-      });
+      // _emmiter.once(event, () => {
+      //   listenerHandle()
+      // });
+      _emmiter.once(event, listenerHandle);
       return this;
     }
     /**
