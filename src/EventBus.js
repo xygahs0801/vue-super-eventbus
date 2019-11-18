@@ -1,13 +1,4 @@
 const Emmiter = require("events");
-function deepClone(obj) {
-    if (!obj || true == obj) return obj;
-    var objType = typeof obj;
-    if ("number" == objType || "string" == objType) return obj;
-    var result = Array.isArray(obj) ? [] : !obj.constructor ? {} : new obj.constructor();
-    if (obj instanceof Map) for (var key of obj.keys()) result.set(key, deepClone(obj.get(key)));
-    for (var key in obj) if (obj.hasOwnProperty(key)) result[key] = deepClone(obj[key]);
-    return result;
-}
 export const EventBus = (() => {
     const _emmiter = new Emmiter();
     const _events = {};
@@ -167,3 +158,12 @@ export const EventBus = (() => {
         }
     };
 })();
+function deepClone(obj) {
+    if (!obj || true == obj) return obj;
+    var objType = typeof obj;
+    if ("number" == objType || "string" == objType) return obj;
+    var result = Array.isArray(obj) ? [] : !obj.constructor ? {} : new obj.constructor();
+    if (obj instanceof Map) for (var key of obj.keys()) result.set(key, deepClone(obj.get(key)));
+    for (var key in obj) if (obj.hasOwnProperty(key)) result[key] = deepClone(obj[key]);
+    return result;
+}
