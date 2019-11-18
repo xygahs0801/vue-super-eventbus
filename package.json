@@ -1,6 +1,6 @@
 {
     "name": "vue-super-eventbus",
-    "version": "1.0.4",
+    "version": "1.0.6",
     "description": "An enhanced component of Vue event bus can be automatically destroyed without manual cancellation of subscription events, modularization, immutability of event data and many other features.",
     "main": "src/EventBus.js",
     "scripts": {
