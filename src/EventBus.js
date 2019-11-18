@@ -12,7 +12,11 @@ export const EventBus = (() => {
     const _emmiter = new Emmiter();
     const _events = {};
     const _subs = {};
+    let _debug = false;
     return class EventBus {
+        constructor({ debug = false } = {}) {
+            _debug = debug;
+        }
         /**
          * Emit event
          * @param {string|symbol} event Event name or symbol
@@ -20,6 +24,9 @@ export const EventBus = (() => {
          * @returns {EventBus} this
          */
         emit(event, ...args) {
+            if (_debug) {
+                console.log("EventBus: EventBus -> emit -> ...args", ...args);
+            }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
             }
@@ -34,6 +41,10 @@ export const EventBus = (() => {
          * @returns {EventBus} this
          */
         share(event, ...args) {
+            if (_debug) {
+                console.log("EventBus: EventBus -> share -> ...args", ...args);
+                console.log("EventBus: EventBus -> share -> event", event);
+            }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
             }
@@ -49,6 +60,12 @@ export const EventBus = (() => {
          * @returns {EventBus} this
          */
         on(vm, event, listener) {
+            let self = this;
+            if (_debug) {
+                console.log("EventBus: EventBus -> on -> vm", vm);
+                console.log("EventBus: EventBus -> on -> event", event);
+                console.log("EventBus: EventBus -> on -> listener", listener);
+            }
             if (!vm) {
                 throw new Error("第1个参数为vue的实例，不能为空");
             }
@@ -68,12 +85,10 @@ export const EventBus = (() => {
             }
             const data = _events[event];
             let listenerHandle = () => {
-                if (event in _events) {
-                    if (data == null) {
-                        listener(data);
-                    } else {
-                        listener(...deepClone(data));
-                    }
+                if (data == null) {
+                    listener();
+                } else {
+                    listener(...deepClone(data));
                 }
             };
             _subs[vm._uid][event].push(listenerHandle);
@@ -98,7 +113,7 @@ export const EventBus = (() => {
                 for (const event in _subs[vm._uid]) {
                     const listeners = _subs[vm._uid][event];
                     for (const listener of listeners) {
-                        _emmiter.off(event, listener);
+                        self.off(event, listener);
                     }
                 }
                 delete _subs[vm._uid];
@@ -111,6 +126,10 @@ export const EventBus = (() => {
          * @returns {EventBus} this
          */
         once(event, listener) {
+            if (_debug) {
+                console.log("EventBus: once -> event", event);
+                console.log("EventBus: once -> listener", listener);
+            }
             if (!event || (typeof event !== "string" && typeof event !== "symbol")) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
             }
@@ -134,6 +153,10 @@ export const EventBus = (() => {
          * @returns {EventBus} this
          */
         off(event, listener) {
+            if (_debug) {
+                console.log("EventBus: off -> event", event);
+                console.log("EventBus: off -> listener", listener);
+            }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
             }
@@ -142,6 +165,9 @@ export const EventBus = (() => {
             }
             _emmiter.off(event, listener);
             return this;
+        }
+        inspect() {
+            console.log("EventBus: -> inspect", { _emmiter, _events, _subs, debug: _debug });
         }
     };
 })();
