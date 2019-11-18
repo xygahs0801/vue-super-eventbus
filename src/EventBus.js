@@ -25,7 +25,7 @@ export const EventBus = (() => {
          */
         emit(event, ...args) {
             if (_debug) {
-                console.log("EventBus: EventBus -> emit -> ...args", ...args);
+                console.log("EventBus: -> emit -> ...args", ...args);
             }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -42,8 +42,8 @@ export const EventBus = (() => {
          */
         share(event, ...args) {
             if (_debug) {
-                console.log("EventBus: EventBus -> share -> ...args", ...args);
-                console.log("EventBus: EventBus -> share -> event", event);
+                console.log("EventBus: -> share -> ...args", ...args);
+                console.log("EventBus: -> share -> event", event);
             }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -62,9 +62,9 @@ export const EventBus = (() => {
         on(vm, event, listener) {
             let self = this;
             if (_debug) {
-                console.log("EventBus: EventBus -> on -> vm", vm);
-                console.log("EventBus: EventBus -> on -> event", event);
-                console.log("EventBus: EventBus -> on -> listener", listener);
+                console.log("EventBus: -> on -> vm", vm);
+                console.log("EventBus: -> on -> event", event);
+                console.log("EventBus: -> on -> listener", listener);
             }
             if (!vm) {
                 throw new Error("第1个参数为vue的实例，不能为空");
