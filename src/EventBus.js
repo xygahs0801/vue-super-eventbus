@@ -83,13 +83,8 @@ export const EventBus = (() => {
             if (!_subs[vm._uid][event]) {
                 _subs[vm._uid][event] = [];
             }
-            const data = _events[event];
-            let listenerHandle = () => {
-                if (data == null) {
-                    listener();
-                } else {
-                    listener(...deepClone(data));
-                }
+            let listenerHandle = (...data) => {
+                listener(...deepClone(data));
             };
             _subs[vm._uid][event].push(listenerHandle);
             const beforeDestroy = vm.$options.beforeDestroy;
@@ -104,8 +99,9 @@ export const EventBus = (() => {
             if (!isReplced) {
                 beforeDestroy.push(beforeDestroyHandle);
             }
+            const data = _events[event];
             if (event in _events) {
-                listenerHandle();
+                listenerHandle(...data);
             }
             _emmiter.on(event, listenerHandle);
             return this;
@@ -134,11 +130,11 @@ export const EventBus = (() => {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
             }
             const data = _events[event];
-            let listenerHandle = () => {
+            let listenerHandle = (...data) => {
                 listener(...deepClone(data));
             };
             if (event in _events) {
-                listenerHandle();
+                listenerHandle(...data);
             }
             // _emmiter.once(event, () => {
             //   listenerHandle()
