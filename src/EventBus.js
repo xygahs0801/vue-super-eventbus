@@ -1,10 +1,10 @@
 const Emmiter = require("events");
-export const EventBus = (() => {
+export default (() => {
     const _emmiter = new Emmiter();
     const _events = {};
     const _subs = {};
     let _debug = false;
-    return class EventBus {
+    class EventBus {
         constructor({ debug = false } = {}) {
             _debug = debug;
         }
@@ -126,11 +126,9 @@ export const EventBus = (() => {
             };
             if (event in _events) {
                 listenerHandle(...data);
+            } else {
+                _emmiter.once(event, listenerHandle);
             }
-            // _emmiter.once(event, () => {
-            //   listenerHandle()
-            // });
-            _emmiter.once(event, listenerHandle);
             return this;
         }
         /**
@@ -156,12 +154,30 @@ export const EventBus = (() => {
         inspect() {
             console.log("EventBus: -> inspect", { _emmiter, _events, _subs, debug: _debug });
         }
-    };
+        install(Vue, options = { debug: false }) {
+            const self = this;
+            Vue.prototype.$bus = self;
+            _debug = !!options.debug;
+            Vue.mixin({
+                mounted: function() {
+                    if (this.$options.on && typeof this.$options.on === "object") {
+                        for (const key in this.$options.on) {
+                            if (this.$options.on.hasOwnProperty(key)) {
+                                const listener = this.$options.on[key].bind(this);
+                                self.on(this, key, listener);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    return new EventBus();
 })();
 function deepClone(obj) {
-    if (!obj || true == obj) return obj;
+    if (!obj || true === obj) return obj;
     var objType = typeof obj;
-    if ("number" == objType || "string" == objType) return obj;
+    if ("number" === objType || "string" === objType) return obj;
     var result = Array.isArray(obj) ? [] : !obj.constructor ? {} : new obj.constructor();
     if (obj instanceof Map) for (var key of obj.keys()) result.set(key, deepClone(obj.get(key)));
     for (var key in obj) if (obj.hasOwnProperty(key)) result[key] = deepClone(obj[key]);
