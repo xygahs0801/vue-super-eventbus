@@ -75,7 +75,7 @@ export default (() => {
                 _subs[vm._uid][event] = [];
             }
             let listenerHandle = (...data) => {
-                listener(...deepClone(data));
+                listener(...data);
             };
             _subs[vm._uid][event].push(listenerHandle);
             const beforeDestroy = vm.$options.beforeDestroy;
@@ -122,7 +122,7 @@ export default (() => {
             }
             const data = _events[event];
             let listenerHandle = (...data) => {
-                listener(...deepClone(data));
+                listener(...data);
             };
             if (event in _events) {
                 listenerHandle(...data);
@@ -174,12 +174,3 @@ export default (() => {
     }
     return new EventBus();
 })();
-function deepClone(obj) {
-    if (!obj || true === obj) return obj;
-    var objType = typeof obj;
-    if ("number" === objType || "string" === objType) return obj;
-    var result = Array.isArray(obj) ? [] : !obj.constructor ? {} : new obj.constructor();
-    if (obj instanceof Map) for (var key of obj.keys()) result.set(key, deepClone(obj.get(key)));
-    for (var key in obj) if (obj.hasOwnProperty(key)) result[key] = deepClone(obj[key]);
-    return result;
-}
