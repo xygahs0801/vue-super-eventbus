@@ -8,15 +8,10 @@ export default (() => {
         constructor({ debug = false } = {}) {
             _debug = debug;
         }
-        /**
-         * Emit event
-         * @param {string|symbol} event Event name or symbol
-         * @param {*} args Event passed data
-         * @returns {EventBus} this
-         */
         emit(event, ...args) {
             if (_debug) {
-                console.log("EventBus: -> emit -> ...args", ...args);
+                console.log("EventBus: -> share -> ...args", ...args);
+                console.log("EventBus: -> share -> event", event);
             }
             if (!event) {
                 throw new Error("第1个参数为事件名，String或者Symbol类型，不能为空");
@@ -24,13 +19,6 @@ export default (() => {
             _emmiter.emit(event, ...args);
             return this;
         }
-        /**
-         * Subscribers who subscribe after the event is published can also receive the event.
-         * It's like a global variable, but when that variable changes, all subscribers can receive a change event.
-         * @param {string|symbol} event Event name or symbol
-         * @param {*} args Event passed data
-         * @returns {EventBus} this
-         */
         share(event, ...args) {
             if (_debug) {
                 console.log("EventBus: -> share -> ...args", ...args);
@@ -43,13 +31,6 @@ export default (() => {
             _emmiter.emit(event, ...args);
             return this;
         }
-        /**
-         * Subscribe events
-         * @param {Vue} vm Vue instance
-         * @param {string|symbol} event Event name or symbol
-         * @param {Function} listener
-         * @returns {EventBus} this
-         */
         on(vm, event, listener) {
             let self = this;
             if (_debug) {
@@ -78,40 +59,13 @@ export default (() => {
                 listener(...data);
             };
             _subs[vm._uid][event].push(listenerHandle);
-            const beforeDestroy = vm.$options.beforeDestroy;
-            let isReplced = false;
-            for (let i = 0; i < beforeDestroy.length; i++) {
-                if (beforeDestroy[i].name === beforeDestroyHandle.name) {
-                    beforeDestroy[i] = beforeDestroyHandle;
-                    isReplced = true;
-                    break;
-                }
-            }
-            if (!isReplced) {
-                beforeDestroy.push(beforeDestroyHandle);
-            }
             const data = _events[event];
             if (event in _events) {
                 listenerHandle(...data);
             }
             _emmiter.on(event, listenerHandle);
             return this;
-            function beforeDestroyHandle() {
-                for (const event in _subs[vm._uid]) {
-                    const listeners = _subs[vm._uid][event];
-                    for (const listener of listeners) {
-                        self.off(event, listener);
-                    }
-                }
-                delete _subs[vm._uid];
-            }
         }
-        /**
-         * Subscribe events once
-         * @param {string|symbol} event Event name or symbol
-         * @param {Function} listener
-         * @returns {EventBus} this
-         */
         once(event, listener) {
             if (_debug) {
                 console.log("EventBus: once -> event", event);
@@ -131,12 +85,6 @@ export default (() => {
             }
             return this;
         }
-        /**
-         * Unsubscribe events
-         * @param {string|symbol} event Event name or symbol
-         * @param {Function} listener
-         * @returns {EventBus} this
-         */
         off(event, listener) {
             if (_debug) {
                 console.log("EventBus: off -> event", event);
@@ -154,9 +102,9 @@ export default (() => {
         inspect() {
             console.log("EventBus: -> inspect", { _emmiter, _events, _subs, debug: _debug });
         }
-        install(Vue, options = { debug: false }) {
+        install(Vue, options = { debug: false, injectName: "$bus" }) {
             const self = this;
-            Vue.prototype.$bus = self;
+            Vue.prototype[options.injectName] = self;
             _debug = !!options.debug;
             Vue.mixin({
                 mounted: function() {
@@ -168,6 +116,15 @@ export default (() => {
                             }
                         }
                     }
+                },
+                beforeDestroy() {
+                    for (const event in _subs[this._uid]) {
+                        const listeners = _subs[this._uid][event];
+                        for (const listener of listeners) {
+                            self.off(event, listener);
+                        }
+                    }
+                    delete _subs[this._uid];
                 }
             });
         }
