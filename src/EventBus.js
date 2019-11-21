@@ -107,7 +107,7 @@ export default (() => {
             Vue.prototype[options.injectName] = self;
             _debug = !!options.debug;
             Vue.mixin({
-                mounted: function() {
+                created: function() {
                     if (this.$options.on && typeof this.$options.on === "object") {
                         for (const key in this.$options.on) {
                             if (this.$options.on.hasOwnProperty(key)) {
