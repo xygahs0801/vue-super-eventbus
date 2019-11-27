@@ -100,7 +100,7 @@ export default (() => {
       return this;
     }
     inspect() {
-      console.log("EventBus: -> inspect", { _emitter: _emitter, _events, _subs, debug: _debug });
+      console.log("EventBus: -> inspect", { emitter: _emitter, _events, _subs, debug: _debug });
     }
     install(Vue, options = { debug: false, injectName: "$bus" }) {
       const self = this;

@@ -1,23 +1,23 @@
 {
-    "name": "vue-super-eventbus",
-    "version": "2.4.0",
-    "description": "An enhanced component of Vue event bus can be automatically destroyed without manual cancellation of subscription events, modularization, immutability of event data and many other features.",
-    "main": "src/EventBus.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Liu Wei",
-    "license": "ISC",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/xygahs0801/vue-super-eventbus.git"
-    },
-    "keywords": [
-        "vue",
-        "eventbus"
-    ],
-    "bugs": {
-        "url": "https://github.com/xygahs0801/vue-super-eventbus/issues"
-    },
-    "homepage": "https://github.com/xygahs0801/vue-super-eventbus#readme"
+  "name": "vue-super-eventbus",
+  "version": "2.4.1",
+  "description": "An enhanced component of Vue event bus can be automatically destroyed without manual cancellation of subscription events, modularization, immutability of event data and many other features.",
+  "main": "src/EventBus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Liu Wei",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xygahs0801/vue-super-eventbus.git"
+  },
+  "keywords": [
+    "vue",
+    "eventbus"
+  ],
+  "bugs": {
+    "url": "https://github.com/xygahs0801/vue-super-eventbus/issues"
+  },
+  "homepage": "https://github.com/xygahs0801/vue-super-eventbus#readme"
 }

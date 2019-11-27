@@ -20,16 +20,27 @@ Vue.use(EventBus)
 ```
 ### In Vue component
 ``` javascript
-created() {
-  //......
-},
+// Recommend
 on:{
   event1(data){
-    // handle data!
+    // handle data
+    console.log(data)
   },
   event2(data){
-    // handle data!
+    // handle data
+    console.log(data)
   }
+},
+// Or
+created() {
+  this.$bus.on(this, "event1", data => {
+    // handle data
+    console.log(data);
+  });
+  this.$bus.on(this, "event2", data => {
+    // handle data
+    console.log(data);
+  });
 },
 ```
 ### In other Vue component
@@ -37,9 +48,9 @@ on:{
 created() {
   this.$bus
     .emit("event1", 'test message')
-    .emit(this, "event2", { messgae: "test json message" });
+    .emit("event2", { message: "test json message" });
 }
 beforeDestroy() {
-  // No need to off the event! The lib take care of this for you!
+  // No need to off the event, The lib take care of this for you.
 }
 ```
